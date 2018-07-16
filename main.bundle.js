@@ -386,7 +386,6 @@
 	    recipesRequests.recipesAPIFetch(food.id, 'GET').then(function (response) {
 	      return handleResponse(response);
 	    }).then(function (data) {
-	      debugger;
 	      $('.food-item-' + food.id).append('<a href="' + data.recipes[0].url + '">Recipe</a>');
 	    });
 	  });
@@ -492,6 +491,7 @@
 	'use strict';
 
 	var foodsRequests = __webpack_require__(1);
+	var recipesRequests = __webpack_require__(3);
 
 	var baseURL = __webpack_require__(2).baseURL();
 
@@ -565,6 +565,11 @@
 	var getEachDiaryFood = function getEachDiaryFood(foods) {
 	  return foods.forEach(function (food) {
 	    renderDiaryFood(food);
+	    recipesRequests.recipesAPIFetch(food.id, 'GET').then(function (response) {
+	      return handleResponse(response);
+	    }).then(function (data) {
+	      $('.food-item-' + food.id).append('<a href="' + data.recipes[0].url + '">Recipe</a>');
+	    });
 	  });
 	};
 
