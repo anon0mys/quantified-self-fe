@@ -47,8 +47,8 @@
 	'use strict';
 
 	var foodsRequests = __webpack_require__(1);
-	var foodsDiary = __webpack_require__(3);
-	var recipesRequests = __webpack_require__(4);
+	var foodsDiary = __webpack_require__(4);
+	var recipesRequests = __webpack_require__(3);
 	var events = __webpack_require__(5);
 	var fileName = location.pathname.split('/').slice(-1)[0];
 	__webpack_require__(6);
@@ -311,6 +311,7 @@
 	'use strict';
 
 	var baseURL = __webpack_require__(2).baseURL();
+	var recipesRequests = __webpack_require__(3);
 
 	var foodsAPIFetch = function foodsAPIFetch(id, method, body) {
 	  return fetch(baseURL + '/api/v1/foods/' + id, {
@@ -382,6 +383,12 @@
 	var getEachFood = function getEachFood(foods) {
 	  return foods.forEach(function (food) {
 	    renderFood(food);
+	    recipesRequests.recipesAPIFetch(food.id, 'GET').then(function (response) {
+	      return handleResponse(response);
+	    }).then(function (data) {
+	      debugger;
+	      $('.food-item-' + food.id).append('<a href="' + data.recipes[0].url + '">Recipe</a>');
+	    });
 	  });
 	};
 
@@ -428,6 +435,58 @@
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var baseURL = __webpack_require__(2).baseURL();
+
+	var recipesAPIFetch = function recipesAPIFetch(id, method, body) {
+	  return fetch(baseURL + '/api/v1/foods/' + id + '/recipes', {
+	    method: '' + method,
+	    headers: { 'Content-Type': 'application/json' },
+	    body: JSON.stringify(body)
+	  });
+	};
+
+	var getRecipes = function getRecipes(id) {
+	  recipesAPIFetch(id, 'GET').then(function (response) {
+	    return handleResponse(response);
+	  }).then(function (data) {
+	    return renderEachRecipe(data.recipes);
+	  }).catch(function (error) {
+	    return console.error({ error: error });
+	  });
+	};
+
+	var renderEachRecipe = function renderEachRecipe(recipes) {
+	  return recipes.forEach(function (recipe) {
+	    renderRecipe(recipe);
+	  });
+	};
+
+	var renderRecipe = function renderRecipe(recipe) {
+	  $('.recipe-list').append('<li><a href="' + recipe.url + '">' + recipe.name + '</a></li>');
+	};
+
+	var handleResponse = function handleResponse(response) {
+	  return response.json().then(function (json) {
+	    if (!response.ok) {
+	      var error = {
+	        status: response.status,
+	        statusTest: response.statusText,
+	        json: json
+	      };
+	      return Promise.reject(error);
+	    }
+	    return json;
+	  });
+	};
+
+	module.exports = { getRecipes: getRecipes, recipesAPIFetch: recipesAPIFetch };
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -597,58 +656,6 @@
 	  renderFoodToMealTable: renderFoodToMealTable,
 	  styleRemainingCalorieCount: styleRemainingCalorieCount
 	};
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var baseURL = __webpack_require__(2).baseURL();
-
-	var recipesAPIFetch = function recipesAPIFetch(id, method, body) {
-	  return fetch(baseURL + '/api/v1/foods/' + id + '/recipes', {
-	    method: '' + method,
-	    headers: { 'Content-Type': 'application/json' },
-	    body: JSON.stringify(body)
-	  });
-	};
-
-	var getRecipes = function getRecipes(id) {
-	  recipesAPIFetch(id, 'GET').then(function (response) {
-	    return handleResponse(response);
-	  }).then(function (data) {
-	    return renderEachRecipe(data.recipes);
-	  }).catch(function (error) {
-	    return console.error({ error: error });
-	  });
-	};
-
-	var renderEachRecipe = function renderEachRecipe(recipes) {
-	  return recipes.forEach(function (recipe) {
-	    renderRecipe(recipe);
-	  });
-	};
-
-	var renderRecipe = function renderRecipe(recipe) {
-	  $('.recipe-list').append('<li><a href="' + recipe.url + '">' + recipe.name + '</a></li>');
-	};
-
-	var handleResponse = function handleResponse(response) {
-	  return response.json().then(function (json) {
-	    if (!response.ok) {
-	      var error = {
-	        status: response.status,
-	        statusTest: response.statusText,
-	        json: json
-	      };
-	      return Promise.reject(error);
-	    }
-	    return json;
-	  });
-	};
-
-	module.exports = { getRecipes: getRecipes, recipesAPIFetch: recipesAPIFetch };
 
 /***/ }),
 /* 5 */
