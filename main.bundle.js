@@ -424,7 +424,7 @@
 	  if (host === "localhost" || host === "127.0.0.1") {
 	    return "http://localhost:3000";
 	  } else {
-	    return "https://shielded-basin-69696.herokuapp.com";
+	    return "https://stark-citadel-18956.herokuapp.com/";
 	  }
 	};
 
