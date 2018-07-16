@@ -440,16 +440,19 @@
 
 	var baseURL = __webpack_require__(2).baseURL();
 
-	var recipesAPIFetch = function recipesAPIFetch(id, method, body) {
-	  return fetch(baseURL + '/api/v1/foods/' + id + '/recipes', {
+	var recipesAPIFetch = function recipesAPIFetch(id, method) {
+	  var start = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
+	  return fetch(baseURL + '/api/v1/foods/' + id + '/recipes?max=10&start=' + start, {
 	    method: '' + method,
-	    headers: { 'Content-Type': 'application/json' },
-	    body: JSON.stringify(body)
+	    headers: { 'Content-Type': 'application/json' }
 	  });
 	};
 
 	var getRecipes = function getRecipes(id) {
-	  recipesAPIFetch(id, 'GET').then(function (response) {
+	  var start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
+	  recipesAPIFetch(id, 'GET', start).then(function (response) {
 	    return handleResponse(response);
 	  }).then(function (data) {
 	    return renderEachRecipe(data.recipes);
